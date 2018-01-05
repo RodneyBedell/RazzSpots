@@ -114,7 +114,7 @@ public class RazzSpots {
 		String calledSpotsString = "";
 		// the list(string) of called spots. will be a String comprised of numbers and spaces
 
-		String callerQuantity = "";
+		String calledQuantity = "";
 		// the name of the participant, + the number of additional spots
 		// should look like "Rodney Bedell 5"
 
@@ -124,19 +124,30 @@ public class RazzSpots {
 		int extraSpots = 0;
 		// number of additional spots, to be filled at random
 
-		// break the input into calledSpotsString and callerQuantity
+		// break the input into calledSpotsString and calledQuantity
 		for(int i = 0; i<input.length(); i++)
 		{
 			// breaks if the loop arrives at the participant's name
 			if (Character.isLetter(input.charAt(i)))
 			{
-				callerQuantity = input.substring(i);
+				calledQuantity = input.substring(i);
+
+				String[] pieces = calledQuantity.split("\\s+");
+				// in most cases, 'pieces' will contain a First name, Last name, and number of spots
+				// occaisonally people will have more than two parts to their name  
+				for (int i = 0; i < pieces.length - 1; i++)
+				{
+					callerName.concat(pieces[i]);
+				}
+				extraSpots += Integer.parseInt(pieces[pieces.length -1]);
 				break;
 			}
 			// adds any leading numbers to the list(string) of called spots
+			// also decrements the number of additional random spots
 			else
 			{
 				calledSpotsString = calledSpotsString + input.charAt(i);
+				extraSpots --;
 			}
 		}
 		// converts the string of called spots into an int[]
@@ -147,13 +158,14 @@ public class RazzSpots {
 		{
 			calledSpotsINT[i] = Integer.parseInt(calls[i]);
 		}
-
-
-
+		this.callSpots(calledSpotsINT, callerName);
 	}
 	// give a person the spots they call, also remove those from the open spots
 	public void callSpots(int[] spots, String callerName)
 	{
+		
+
+
 		for (int calledSpot : spots)
 		{
 			this.list.get(calledSpot - 1).concat(callerName);
