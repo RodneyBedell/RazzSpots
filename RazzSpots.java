@@ -112,7 +112,7 @@ public class RazzSpots {
 		// figure out the called spots (specific spots claimed by participants)
 
 		String calledSpotsString = "";
-		// the list(string) of called spots
+		// the list(string) of called spots. will be a String comprised of numbers and spaces
 
 		String callerQuantity = "";
 		// the name of the participant, + the number of additional spots
@@ -142,10 +142,23 @@ public class RazzSpots {
 		// converts the string of called spots into an int[]
 		String[] calls = calledSpotsString.split("\\s+");
 
-		int[] calledSpotsArray = new int[calls.length];
+		int[] calledSpotsINT = new int[calls.length];
+		for (int i = 0; i<calls.length; i++)
+		{
+			calledSpotsINT[i] = Integer.parseInt(calls[i]);
+		}
 
 
-		System.out.println(calledSpotsString);
+
+	}
+	// give a person the spots they call, also remove those from the open spots
+	public void callSpots(int[] spots, String callerName)
+	{
+		for (int calledSpot : spots)
+		{
+			this.list.get(calledSpot - 1).concat(callerName);
+			this.openSpots.remove((Integer)calledSpot);
+		}
 	}
 
 }
