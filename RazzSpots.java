@@ -36,32 +36,39 @@ public class RazzSpots {
 	ArrayList<Integer> openSpots;
 	// the list of open spots that have not been claimed
 
+	int fuscoSpots;
+	// the number of spots given to fusco
+
 	public RazzSpots()
 	{
 		this.list = new ArrayList<String>();
 		this.openSpots = new ArrayList<Integer>();
+		this.fuscoSpots = 0;
 	}
 
-	public static void main (String[] args)
+	public static void main(String[] args)
 	{
 		RazzSpots razz = new RazzSpots();
 		razz.initiate();
 		razz.print();
-		razz.fill();
-		razz.print();
+		System.out.println("Filling any spots?");
+		while(razz.openSpots.size() > 0)
+		{
+			razz.fill();
+		}
 	}
 
 	// print the current razz list
-	public void print ()
+	public void print()
 	{
-		for (String slot : list)
+		for (String spot : list)
 		{
-			System.out.println(slot);
+			System.out.println(spot);
 		}
 	}
 
 	// initiate the razz list with a specified number of spots, adding in fusco spots
-	public void initiate ()
+	public void initiate()
 	{
 		System.out.println("How may spots in the Razz?");
 		Scanner scanner = new Scanner(System.in);
@@ -73,17 +80,17 @@ public class RazzSpots {
 			openSpots.add(i+1);
 		}
 		System.out.println("How many fusco spots?");
-		int fusco = scanner.nextInt();
-		for (int i=0;i<fusco;i++)
+	 	fuscoSpots = scanner.nextInt();
+		for (int i=0;i<fuscoSpots;i++)
 		{
 			list.add((spots + i + 1) + ". fusco");
 		}
 	}
 
 	// fill the spots in the razz
-	public void fill ()
+	public void fill()
 	{
-		System.out.println("Filling any spots?");
+
 		Scanner scanner = new Scanner(System.in);
 		String input = scanner.nextLine();
 		/**
@@ -109,7 +116,93 @@ public class RazzSpots {
 
 		*/
 
+		String[] pieces = input.split("\\s+");
+		/**
+			 the input is broken up into all the called spots, the parts of the name, and the total spots
+			 example
+			 	1 2 3 Rodney Bedell 6
+			 results in
+			 	1
+			 	2
+			 	3
+			 	Rodney
+			 	Bedell
+			 	6
+		*/
+		ArrayList<Integer> calledSpots = new ArrayList<Integer>();
+		String callerName = "";
+		int extraSpots = 0;
+ 
+		// iterate through the pieces, and store the inputs where they belong
+		for (String piece : pieces)
+		{
+			if (piece.matches("-?\\d+(\\.\\d+)?"))
+			{
+				calledSpots.add(Integer.parseInt(piece));
+			}
+			else
+			{
+				callerName += piece;
+				callerName += " ";
+			}
+		}
+		// callerName is now the caller's full name, with an additional space at the end: "Rodney Bedell "
+		// calledSpots now contains all the called spots, but also might have the total number of spots as the last item
+		// if calledSpots does have the total number at the end (String[] pieces ends with a number), it must be fixed
+
+		if (pieces[pieces.length - 1].matches("-?\\d+(\\.\\d+)?"))
+		{
+			extraSpots += calledSpots.get(calledSpots.size() -1);
+			calledSpots.remove(calledSpots.size()-1);
+			extraSpots -= calledSpots.size();
+		}
+
+		// make sure the input is acceptable
+		if (calledSpots.size() + extraSpots > this.openSpots.size())
+		{
+			System.out.println("I'm sorry, there aren't enough open spots. Please try that again");
+			return;
+		}
+		/** TO DO: 
+			check for spots that have already been claimed
+			check for someone taking too many spots
+		*/
+
 		// figure out the called spots (specific spots claimed by participants)
+		for (Integer spot : calledSpots)
+		{
+			String newSpot = this.list.get(spot - 1);
+			newSpot += callerName;
+			this.list.set(spot - 1, newSpot);
+			this.openSpots.remove(spot);
+		}
+
+		// fill the extraSpots, chosen at random
+		for (int i = 0; i < extraSpots; i++)
+		{
+			Integer spot = openSpots.get((int)(Math.random() * openSpots.size()));
+			String newSpot = this.list.get(spot - 1);
+			newSpot += callerName;
+			this.list.set(spot - 1, newSpot);
+			this.openSpots.remove(spot);
+		}
+
+		this.print();
+
+		if (this.openSpots.size() == 0)
+		{
+			System.out.println("Congrats! To the Queue!");
+		}
+		else
+		{
+			System.out.println("Filling any more?");
+		}
+	}
+
+
+
+
+/**
 
 		String calledSpotsString = "";
 		// the list(string) of called spots. will be a String comprised of numbers and spaces
@@ -172,5 +265,7 @@ public class RazzSpots {
 			this.openSpots.remove((Integer)calledSpot);
 		}
 	}
+	*/
+
 
 }
